@@ -32,6 +32,7 @@ import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 
+import java.text.DateFormat;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -493,8 +494,12 @@ public class ClientAPI {
         map.put("year_day", calendar.get(Calendar.DAY_OF_YEAR));
         map.put("week_day", calendar.get(Calendar.DAY_OF_WEEK));
         map.put("daylight_saving", calendar.getTimeZone().inDaylightTime(date));
+        map.put("timestamp", calendar.getTimeInMillis());
 
-        SimpleDateFormat format = new SimpleDateFormat("Z|zzzz|G|MMMM|EEEE", Locale.US);
+        DateFormat format = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.LONG, SimpleDateFormat.LONG);
+        map.put("time", format.format(date));
+
+        format = new SimpleDateFormat("Z|zzzz|G|MMMM|EEEE", Locale.US);
         String[] f = format.format(date).split("\\|");
 
         map.put("timezone", f[0]);
