@@ -19,9 +19,12 @@
     "MinecraftMixin",
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
+    "TextDisplayMixin",
+
     "font.BakedGlyphMixin",
     "font.BitmapGlyphMixin",
     "font.FontSetMixin",
+
     "gui.ChatComponentAccessor",
     "gui.ChatComponentMixin",
     "gui.ChatScreenAccessor",
@@ -42,14 +45,17 @@
     "gui.SuggestionsListMixin",
     "gui.books.BookViewScreenMixin",
     "gui.books.LineInfoMixin",
+
     "input.InputConstantsTypeMixin",
     "input.KeyboardHandlerMixin",
     "input.KeyMappingAccessor",
     "input.KeyMappingMixin",
     "input.MouseHandlerMixin",
+
     "particle.ParticleAccessor",
     "particle.ParticleEngineMixin",
     "particle.SingleQuadParticleMixin",
+
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererAccessor",
@@ -58,19 +64,22 @@
     "render.MissingTextureAtlasSpriteAccessor",
     "render.ModelManagerAccessor",
     "render.PlayerModelMixin",
-    "TextDisplayMixin",
     "render.TextureAtlasAccessor",
     "render.TextureManagerAccessor",
+
     "render.layers.CapeLayerMixin",
     "render.layers.CustomHeadLayerMixin",
     "render.layers.HumanoidArmorLayerAccessor",
     "render.layers.HumanoidArmorLayerMixin",
     "render.layers.ParrotOnShoulderLayerMixin",
+
     "render.layers.elytra.ElytraLayerAccessor",
     "render.layers.elytra.ElytraLayerMixin",
     "render.layers.elytra.ElytraModelAccessor",
+
     "render.layers.items.ItemInHandLayerMixin",
     "render.layers.items.PlayerItemInHandLayerMixin",
+
     "render.renderers.ArrowRendererMixin",
     "render.renderers.BlockEntityWithoutLevelRendererMixin",
     "render.renderers.EntityRendererMixin",
@@ -83,6 +92,9 @@
     "render.renderers.SignRendererMixin",
     "render.renderers.SimpleVCMixin",
     "render.renderers.SkullBlockRendererMixin",
+    "render.renderers.ThrownItemRenderMixin",
+    "render.renderers.ThrownTridentRendererMixin",
+
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
