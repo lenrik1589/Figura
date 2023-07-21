@@ -15,7 +15,6 @@ import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.EntryPointManager;
 import org.figuramc.figura.gui.Emojis;
-import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.mixin.SkullBlockEntityAccessor;
 import org.figuramc.figura.permissions.PermissionManager;
@@ -78,8 +77,6 @@ public class FiguraMod {
         LocalAvatarFetcher.tick();
         popPushProfiler("avatars");
         AvatarManager.tickLoadedAvatars();
-        popPushProfiler("chatPrint");
-        FiguraLuaPrinter.printChatFromQueue();
         popProfiler();
         ticks++;
     }

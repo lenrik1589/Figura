@@ -10,7 +10,6 @@ import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.screens.ConfigScreen;
-import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.api.ConfigAPI;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
@@ -18,6 +17,8 @@ import org.figuramc.figura.resources.FiguraRuntimeResources;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,10 +118,20 @@ public class Configs {
                 @Override
                 public void onChange() {
                     super.onChange();
-                    FiguraLuaPrinter.updateDecimalFormatting();
+                    updateDecimalFormatting();
                 }
             };
 
+    public static DecimalFormat decimalFormat;
+    private static void updateDecimalFormatting() {
+        int config = LOG_NUMBER_LENGTH.value;
+        decimalFormat = new DecimalFormat("0" + (config > 0 ? "." + "#".repeat(config) : ""));
+        decimalFormat.setRoundingMode(RoundingMode.DOWN);
+    }
+
+    static {
+        updateDecimalFormatting();
+    }
 
     // -- RENDERING -- // 
 

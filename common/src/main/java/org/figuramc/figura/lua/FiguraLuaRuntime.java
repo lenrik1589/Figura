@@ -63,6 +63,7 @@ public class FiguraLuaRuntime {
     private final Map<String, Varargs> loadedScripts = new HashMap<>();
     private final Stack<String> loadingScripts = new Stack<>();
     public final LuaTypeManager typeManager = new LuaTypeManager();
+    public final LuaPrinter printer;
 
     public FiguraLuaRuntime(Avatar avatar, Map<String, String> scripts) {
         this.owner = avatar;
@@ -79,6 +80,7 @@ public class FiguraLuaRuntime {
 
         userGlobals.load(new DebugLib());
         setHookFunction = userGlobals.get("debug").get("sethook");
+        printer = new LuaPrinter(this, avatar);
 
         setupFiguraSandbox();
 
@@ -217,9 +219,6 @@ public class FiguraLuaRuntime {
     private void loadExtraLibraries() {
         // require
         userGlobals.set("require", requireFunction);
-
-        // load print functions
-        FiguraLuaPrinter.loadPrintFunctions(this);
 
         // custom loadstring
         LuaValue loadstring = LOADSTRING_FUNC.apply(this);
@@ -383,7 +382,8 @@ public class FiguraLuaRuntime {
     // error ^-^ //
 
     public void error(Throwable e) {
-        FiguraLuaPrinter.sendLuaError(parseError(e), owner);
+        printer.clear();
+        printer.sendLuaError(parseError(e));
         owner.scriptError = true;
         owner.luaRuntime = null;
         owner.clearParticles();
