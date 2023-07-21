@@ -92,6 +92,12 @@
   "figura.permissions.value.custom_sounds.tooltip": "Toggles if the Avatar can play Custom Sounds, provided by the Avatar itself",
   "figura.permissions.value.custom_skull": "Custom Player Skull",
   "figura.permissions.value.custom_skull.tooltip": "Toggles if Player Heads should render the Avatar instead of the vanilla skin",
+  "figura.permissions.value.printing": "Printing",
+  "figura.permissions.value.printing.tooltip": "Toggles if Avatar can use print functions\n(print, printJson, printTable and their log variants)",
+  "figura.permissions.value.max_print_queue": "Max Print Queue",
+  "figura.permissions.value.max_print_queue.tooltip": "Maximum number of characters that can be in the print queue of the character at one time",
+  "figura.permissions.value.max_print_tick": "Max Print Per Tick",
+  "figura.permissions.value.max_print_tick.tooltip": "Maximum number of characters that will be printed from queue in one tick",
 
 
   "figura.popup_menu.cancel": "Cancel",

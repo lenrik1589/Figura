@@ -10,7 +10,6 @@ import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.screens.ConfigScreen;
-import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.api.ConfigAPI;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
@@ -18,6 +17,8 @@ import org.figuramc.figura.resources.FiguraRuntimeResources;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,13 +115,23 @@ public class Configs {
             };
     public static final ConfigType.PositiveIntConfig
             LOG_NUMBER_LENGTH = new ConfigType.PositiveIntConfig("log_number_length", SCRIPT, 5) {
-        @Override
-        public void onChange() {
-            super.onChange();
-            FiguraLuaPrinter.updateDecimalFormatting();
-        }
-    };
+                @Override
+                public void onChange() {
+                    super.onChange();
+                    updateDecimalFormatting();
+                }
+            };
 
+    public static DecimalFormat decimalFormat;
+    private static void updateDecimalFormatting() {
+        int config = LOG_NUMBER_LENGTH.value;
+        decimalFormat = new DecimalFormat("0" + (config > 0 ? "." + "#".repeat(config) : ""));
+        decimalFormat.setRoundingMode(RoundingMode.DOWN);
+    }
+
+    static {
+        updateDecimalFormatting();
+    }
 
     // -- RENDERING -- // 
 
@@ -210,16 +221,14 @@ public class Configs {
                     NetworkStuff.checkVersion();
                 }
             },
-            DEFAULT_PERMISSION_LEVEL = new ConfigType.EnumConfig("default_permission_level", MISC, 2, Permissions.Category.values().length) {
-                {
-                    List<Component> list = new ArrayList<>();
-                    Permissions.Category[] categories = Permissions.Category.values();
-                    for (Permissions.Category category : categories)
-                        list.add(category.text.copy());
-                    this.enumList = list;
-                    this.enumTooltip = null;
-                }
-
+            DEFAULT_PERMISSION_LEVEL = new ConfigType.EnumConfig("default_permission_level", MISC, 2, Permissions.Category.values().length) {{
+                List<Component> list = new ArrayList<>();
+                Permissions.Category[] categories = Permissions.Category.values();
+                for (Permissions.Category category : categories)
+                    list.add(category.text.copy());
+                this.enumList = list;
+                this.enumTooltip = null;
+            }
                 @Override
                 public void onChange() {
                     super.onChange();
@@ -244,11 +253,11 @@ public class Configs {
             LOG_PINGS = new ConfigType.EnumConfig("log_pings", DEV, 0, 3);
     public static final ConfigType.BoolConfig
             SYNC_PINGS = new ConfigType.BoolConfig("sync_pings", DEV, false) {{
-        String tooltip = "config.sync_pings.tooltip.";
-        this.tooltip = FiguraText.of(tooltip + "1")
-                .append("\n")
-                .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
-    }},
+                String tooltip = "config.sync_pings.tooltip.";
+                this.tooltip = FiguraText.of(tooltip + "1")
+                        .append("\n")
+                        .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+            }},
             CHAT_MESSAGES = new ConfigType.BoolConfig("chat_messages", DEV, false) {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
                 String tooltip = "config.chat_messages.tooltip.";
@@ -260,30 +269,30 @@ public class Configs {
             }};
     public static final ConfigType.FolderConfig
             MAIN_DIR = new ConfigType.FolderConfig("main_dir", DEV, "") {
-        @Override
-        public void onChange() {
-            super.onChange();
-            PermissionManager.reinit();
-            LocalAvatarFetcher.reinit();
-        }
-    };
+                @Override
+                public void onChange() {
+                    super.onChange();
+                    PermissionManager.reinit();
+                    LocalAvatarFetcher.reinit();
+                }
+            };
     public static final ConfigType.IPConfig
             SERVER_IP = new ConfigType.IPConfig("server_ip", DEV, "figura.moonlight-devs.org") {
-        @Override
-        public void onChange() {
-            super.onChange();
-            NetworkStuff.reAuth();
-        }
-    };
+                @Override
+                public void onChange() {
+                    super.onChange();
+                    NetworkStuff.reAuth();
+                }
+            };
     @SuppressWarnings("unused")
     public static final ConfigType.ButtonConfig
             CLEAR_CACHE = new ConfigType.ButtonConfig("clear_cache", DEV, () -> {
-        CacheAvatarLoader.clearCache();
-        LocalAvatarFetcher.clearCache();
-        ConfigScreen.clearCache();
-        FiguraRuntimeResources.clearCache();
-        FiguraToast.sendToast(FiguraText.of("toast.cache_clear"));
-    }),
+                CacheAvatarLoader.clearCache();
+                LocalAvatarFetcher.clearCache();
+                ConfigScreen.clearCache();
+                FiguraRuntimeResources.clearCache();
+                FiguraToast.sendToast(FiguraText.of("toast.cache_clear"));
+            }),
             REDOWNLOAD_ASSETS = new ConfigType.ButtonConfig("redownload_assets", DEV, () -> {
                 FiguraRuntimeResources.init();
                 Minecraft.getInstance().reloadResourcePacks();
