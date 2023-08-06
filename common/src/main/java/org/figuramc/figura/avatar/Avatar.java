@@ -243,8 +243,10 @@ public class Avatar {
         tick.reset(permissions.get(Permissions.TICK_INST));
         tickEvent();
 
-        FiguraMod.popPushProfiler("print");
-        luaRuntime.printer.tick();
+        if (luaRuntime != null) {
+            FiguraMod.popPushProfiler("print");
+            luaRuntime.printer.tick();
+        }
 
         FiguraMod.popProfiler();
     }

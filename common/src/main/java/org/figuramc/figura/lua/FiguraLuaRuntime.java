@@ -389,6 +389,7 @@ public class FiguraLuaRuntime {
     public void error(Throwable e) {
         printer.clear();
         printer.sendLuaError(parseError(e));
+        printer.tick();
         owner.scriptError = true;
         owner.luaRuntime = null;
         owner.clearParticles();

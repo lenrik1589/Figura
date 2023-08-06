@@ -244,7 +244,7 @@ public class LuaPrinter {
             keyText = Component.translatable("chat.square_brackets", getPrintText(typeManager, key, hasTooltip, true, new HashMap<>())).withStyle(ChatFormatting.GRAY);
         text.append(keyText).append(" = ");
 
-        FiguraMod.LOGGER.info("{} / {} ({})", getPrintText(typeManager, key, false, true, new HashMap<>()).getString(), getPrintText(typeManager, value, false, true, new HashMap<>()).getString(), seen.containsKey(value) ? seen.get(value).getString() : "null" );
+        // FiguraMod.LOGGER.info("{} / {} ({})", getPrintText(typeManager, key, false, true, new HashMap<>()).getString(), getPrintText(typeManager, value, false, true, new HashMap<>()).getString(), seen.containsKey(value) ? seen.get(value).getString() : "null" );
         // value
         if (value.istable() || value.isuserdata()) {
             if (seen.containsKey(value))
