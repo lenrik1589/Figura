@@ -387,10 +387,10 @@ public class FiguraLuaRuntime {
     // error ^-^ //
 
     public void error(Throwable e) {
+        owner.scriptError = true;
         printer.clear();
         printer.sendLuaError(parseError(e));
         printer.tick();
-        owner.scriptError = true;
         owner.luaRuntime = null;
         owner.clearParticles();
         owner.clearSounds();
