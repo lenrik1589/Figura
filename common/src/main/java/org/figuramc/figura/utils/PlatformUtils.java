@@ -4,6 +4,7 @@ import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.SharedConstants;
 
 import java.nio.file.Path;
+import java.util.Map;
 
 public class PlatformUtils {
 
