@@ -34,7 +34,15 @@ public class Permissions {
             OFFSCREEN_RENDERING = new Permissions("OFFSCREEN_RENDERING", 0, 0, 0, 1, 1),
             // CUSTOM_SHADERS = new Permissions("CUSTOM_SHADERS", 0, 0, 1, 1, 1),
             CUSTOM_SOUNDS = new Permissions("CUSTOM_SOUNDS", 0, 0, 1, 1, 1),
-            CUSTOM_SKULL = new Permissions("CUSTOM_SKULL", 0, 0, 1, 1, 1);
+            CUSTOM_SKULL = new Permissions("CUSTOM_SKULL", 0, 0, 1, 1, 1),
+            PRINTING = new Permissions("PRINTING", 0, 0, 0, 0, 1),
+            MAX_PRINT_QUEUE = new Permissions("MAX_PRINT_QUEUE", 0, 524288, 0, 4096, 32768, 131072, 524288) {
+                @Override
+                public boolean checkInfinity(int value) {
+                    return false;
+                }
+            },
+            MAX_PRINT_TICK = new Permissions("MAX_PRINT_TICK", 0, 16384, 0, 128, 1024, 1024, 16384);
 
     public static final List<Permissions> DEFAULT = List.of(
             INIT_INST,
@@ -53,7 +61,10 @@ public class Permissions {
             NAMEPLATE_EDIT,
             OFFSCREEN_RENDERING,
             CUSTOM_SOUNDS,
-            CUSTOM_SKULL
+            CUSTOM_SKULL,
+            PRINTING,
+            MAX_PRINT_QUEUE,
+            MAX_PRINT_TICK
     );
 
 

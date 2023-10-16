@@ -17,7 +17,6 @@ import org.figuramc.figura.gui.ActionWheel;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.PopupMenu;
 import org.figuramc.figura.gui.screens.WardrobeScreen;
-import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.utils.FiguraText;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -127,7 +126,6 @@ public abstract class MinecraftMixin {
     @Inject(at = @At("RETURN"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
     private void clearLevel(Screen screen, CallbackInfo ci) {
         AvatarManager.clearAllAvatars();
-        FiguraLuaPrinter.clearPrintQueue();
         NetworkStuff.unsubscribeAll();
     }
 

@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 
@@ -28,7 +27,7 @@ class RunCommand {
             luaRuntime.load("runCommand", lua).call();
             return 1;
         } catch (Exception | StackOverflowError e) {
-            FiguraLuaPrinter.sendLuaError(FiguraLuaRuntime.parseError(e), luaRuntime.owner);
+            luaRuntime.printer.sendLuaError(FiguraLuaRuntime.parseError(e));
             return 0;
         }
     }

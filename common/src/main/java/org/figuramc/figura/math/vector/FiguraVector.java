@@ -1,6 +1,6 @@
 package org.figuramc.figura.math.vector;
 
-import org.figuramc.figura.lua.FiguraLuaPrinter;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.math.matrix.FiguraMatrix;
 import org.figuramc.figura.utils.MathUtils;
 
@@ -116,7 +116,7 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
         sb.append("{");
 
         for (int i = 0; i < d.length; i++) {
-            sb.append(FiguraLuaPrinter.df.format(d[i]));
+            sb.append(Configs.decimalFormat.format(d[i]));
             if (i < d.length - 1)
                 sb.append(", ");
         }

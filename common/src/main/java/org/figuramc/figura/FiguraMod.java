@@ -15,7 +15,6 @@ import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.EntryPointManager;
 import org.figuramc.figura.font.Emojis;
-import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.mixin.SkullBlockEntityAccessor;
 import org.figuramc.figura.permissions.PermissionManager;
@@ -84,8 +83,6 @@ public class FiguraMod {
         LocalAvatarFetcher.tick();
         popPushProfiler("avatars");
         AvatarManager.tickLoadedAvatars();
-        popPushProfiler("chatPrint");
-        FiguraLuaPrinter.printChatFromQueue();
         popPushProfiler("emojiAnim");
         Emojis.tickAnimations();
         popProfiler();
@@ -146,7 +143,8 @@ public class FiguraMod {
      */
     public static UUID playerNameToUUID(String playerName) {
         GameProfileCache cache = SkullBlockEntityAccessor.getProfileCache();
-        if (cache == null) return null;
+        if (cache == null)
+            return null;
 
         var profile = cache.get(playerName);
         return profile.isEmpty() ? null : profile.get().getId();

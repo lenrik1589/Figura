@@ -33,7 +33,6 @@ import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.animation.AnimationPlayer;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.TextureAPI;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -255,6 +254,11 @@ public class Avatar {
         tick.reset(permissions.get(Permissions.TICK_INST));
         tickEvent();
 
+        if (luaRuntime != null) {
+            FiguraMod.popPushProfiler("print");
+            luaRuntime.printer.tick();
+        }
+
         FiguraMod.popProfiler();
     }
 
@@ -286,7 +290,7 @@ public class Avatar {
             if (args == null || function == null)
                 return;
 
-            FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
+            luaRuntime.printer.sendPingMessage(name, data.length, args);
             luaRuntime.run(function.func, tick, (Object[]) args);
         });
     }
