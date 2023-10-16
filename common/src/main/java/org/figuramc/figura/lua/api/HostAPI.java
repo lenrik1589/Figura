@@ -200,7 +200,7 @@ public class HostAPI {
     private static final HashMap<Integer, String> boardNames = new HashMap<>() {{
        put(0, "list");
        put(1, "sidebar");
-       put(2, "belowName");
+       put(2, "below_name");
         for (int i = 0; i < 16; i++)
             put(3 + i, "sidebar_team_" + ChatFormatting.getById(i).getSerializedName());
     }};
