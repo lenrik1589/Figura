@@ -111,7 +111,7 @@ public abstract class ConfigType<T> {
         public final Category parent;
 
         public ParentedConfig(String name, Category category, T value, boolean hidden) {
-            super(name, value, hidden);
+            super(category.id + "." + name, value, hidden);
             this.parent = category;
 
             category.children.add(this);
@@ -152,7 +152,7 @@ public abstract class ConfigType<T> {
         public EnumConfig(String name, Category category, int defaultValue, int length) {
             super(name, category, defaultValue);
 
-            name = "config." + name;
+            name = "config." + category.id + "." + name;
 
             // generate enum list
             ArrayList<Component> enumList = new ArrayList<>();
