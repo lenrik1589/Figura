@@ -358,7 +358,7 @@ public class ActionWheel {
             }
         }
         // wheel click action
-        if (avatar.luaRuntime.action_wheel.mouseClicked(avatar, button))
+        if (avatar.luaRuntime != null && avatar.luaRuntime.action_wheel.mouseClicked(avatar, button))
             return;
 
         selected = -1;
@@ -382,7 +382,7 @@ public class ActionWheel {
         }
 
         // wheel scroll action
-        if (avatar.luaRuntime.action_wheel.mouseScroll(avatar, delta))
+        if (avatar.luaRuntime != null && avatar.luaRuntime.action_wheel.mouseScroll(avatar, delta))
             return;
 
         // page scroll

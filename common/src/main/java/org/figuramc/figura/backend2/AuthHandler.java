@@ -56,10 +56,10 @@ public class AuthHandler {
     }
 
     private static String getServerID(String username) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/auth/id?username=" + username)).build());
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("auth/id?username=" + username)).build());
     }
 
     private static String getToken(String serverID) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/auth/verify?id=" + serverID)).build());
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("auth/verify?id=" + serverID)).build());
     }
 }

@@ -521,11 +521,11 @@ public class NetworkStuff {
     }
 
     public static InputStream getResourcesHashes(String version) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/assets/" + version)).timeout(Duration.ofSeconds(15)).build());
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("assets/" + version)).timeout(Duration.ofSeconds(15)).build());
     }
 
     public static InputStream getResource(String version, String resource) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/assets/" + version + "/" + resource)).build());
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("assets/" + version + "/" + resource)).build());
     }
 
 
