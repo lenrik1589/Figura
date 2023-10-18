@@ -1,4 +1,4 @@
-package org.figuramc.figura.backend2;
+package org.figuramc.figura.backend;
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import org.figuramc.figura.FiguraMod;

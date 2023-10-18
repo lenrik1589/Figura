@@ -1,4 +1,4 @@
-package org.figuramc.figura.backend2;
+package org.figuramc.figura.backend;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -14,7 +14,7 @@ public class BackendCommands {
 
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
         // root
-        LiteralArgumentBuilder<FiguraClientCommandSource> backend = LiteralArgumentBuilder.literal("backend2");
+        LiteralArgumentBuilder<FiguraClientCommandSource> backend = LiteralArgumentBuilder.literal("backend");
 
         // force backend connection
         LiteralArgumentBuilder<FiguraClientCommandSource> connect = LiteralArgumentBuilder.literal("connect");

@@ -1,4 +1,4 @@
-package org.figuramc.figura.backend2.websocket;
+package org.figuramc.figura.backend.websocket;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

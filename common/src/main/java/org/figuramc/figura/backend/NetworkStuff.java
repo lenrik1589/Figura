@@ -1,4 +1,4 @@
-package org.figuramc.figura.backend2;
+package org.figuramc.figura.backend;
 
 import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
@@ -14,8 +14,8 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.avatar.UserData;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
-import org.figuramc.figura.backend2.websocket.C2SMessageHandler;
-import org.figuramc.figura.backend2.websocket.WebsocketThingy;
+import org.figuramc.figura.backend.websocket.C2SMessageHandler;
+import org.figuramc.figura.backend.websocket.WebsocketThingy;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.gui.FiguraToast;

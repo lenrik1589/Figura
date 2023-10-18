@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.server.packs.PathPackResources;
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.backend.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.IOUtils;
 

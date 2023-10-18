@@ -1,8 +1,8 @@
-package org.figuramc.figura.backend2.websocket;
+package org.figuramc.figura.backend.websocket;
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.backend.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.utils.FiguraText;

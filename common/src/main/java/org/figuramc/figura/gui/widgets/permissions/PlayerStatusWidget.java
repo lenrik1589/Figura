@@ -5,7 +5,7 @@ import net.minecraft.network.chat.MutableComponent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.backend.NetworkStuff;
 import org.figuramc.figura.gui.widgets.StatusWidget;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraText;

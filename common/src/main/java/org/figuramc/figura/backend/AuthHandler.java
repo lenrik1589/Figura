@@ -1,4 +1,4 @@
-package org.figuramc.figura.backend2;
+package org.figuramc.figura.backend;
 
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.exceptions.InsufficientPrivilegesException;
