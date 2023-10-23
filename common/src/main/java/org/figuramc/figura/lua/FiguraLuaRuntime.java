@@ -466,4 +466,14 @@ public class FiguraLuaRuntime {
         // failsafe return
         return null;
     }
+
+    public LuaTable getShared() {
+        HashMap<LuaValue, LuaValue> values = new HashMap<>();
+        LuaTable table = new ReadOnlyLuaTable(avatar_meta.storedStuff, values, typeManager);
+        if (values.get(userGlobals) != null) {
+            error(new LuaError("found globals in avatar:store()!\nStoring user globals (_G) anywhere in shared vars is ill-advised as it makes other users run out of memory.\nPlease report this error to avatar owner/maker."));
+            table = ReadOnlyLuaTable.EMPTY;
+        }
+        return table;
+    }
 }

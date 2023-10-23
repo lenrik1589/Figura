@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ReadOnlyLuaTable extends LuaTable {
+    public static final ReadOnlyLuaTable EMPTY = new ReadOnlyLuaTable(new LuaTable());
+
     private final Map<LuaValue, LuaValue> seen;
     private final LuaTypeManager manager;
 
@@ -42,14 +44,13 @@ public class ReadOnlyLuaTable extends LuaTable {
 
         if (value instanceof ReadOnlyLuaTable)
             seen.put(value, value);
-        else if (value.istable()) {
+        else if (value.istable())
             seen.put(value, new ReadOnlyLuaTable(value, seen, manager));
-        } else if (value.isuserdata()) {
+        else if (value.isuserdata()) {
             Object userdata = value.checkuserdata();
-            seen.put(value, LuaValue.userdataOf(userdata instanceof LuaUserdata u ? u.m_instance : userdata).setmetatable(value.getmetatable()));
-        } else {
+            seen.put(value, LuaValue.userdataOf(userdata instanceof LuaUserdata u? u.m_instance : userdata).setmetatable(value.getmetatable()));
+        } else
             seen.put(value, value);
-        }
 
         return seen.get(value);
     }

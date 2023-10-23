@@ -6,81 +6,82 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 
 public class Keyframe implements Comparable<Keyframe> {
 
-    private final Avatar owner;
-    private final Animation animation;
-    private final float time;
+    private final Avatar        owner;
+    private final Animation     animation;
+    private final float         time;
     private final Interpolation interpolation;
-    private final FiguraVec3 targetA, targetB;
-    private final String[] aCode, bCode;
-    private final String chunkName;
-    private final FiguraVec3 bezierLeft, bezierRight;
-    private final FiguraVec3 bezierLeftTime, bezierRightTime;
+    private final FiguraVec3    targetA, targetB;
+    private final String[]      codeA, codeB;
+    private final String        chunkName;
+    private final FiguraVec3    bezierLeft, bezierRight;
+    private final FiguraVec3    bezierLeftTime, bezierRightTime;
+    private final Object[]      cacheA = new Object[3], cacheB = new Object[3];
 
     public Keyframe(Avatar owner, Animation animation, float time, Interpolation interpolation, Pair<FiguraVec3, String[]> a, Pair<FiguraVec3, String[]> b, FiguraVec3 bezierLeft, FiguraVec3 bezierRight, FiguraVec3 bezierLeftTime, FiguraVec3 bezierRightTime) {
-        this.owner = owner;
-        this.animation = animation;
-        this.time = time;
-        this.interpolation = interpolation;
-        this.targetA = a.getFirst();
-        this.targetB = b.getFirst();
-        this.aCode = a.getSecond();
-        this.bCode = b.getSecond();
-        this.chunkName = animation.getName() + " keyframe (" + time + "s)";
-        this.bezierLeft = bezierLeft;
-        this.bezierRight = bezierRight;
-        this.bezierLeftTime = bezierLeftTime;
+        this.owner           = owner;
+        this.animation       = animation;
+        this.time            = time;
+        this.interpolation   = interpolation;
+        this.targetA         = a.getFirst();
+        this.targetB         = b.getFirst();
+        this.codeA           = a.getSecond();
+        this.codeB           = b.getSecond();
+        this.chunkName       = animation.getName() + " keyframe (" + time + "s)";
+        this.bezierLeft      = bezierLeft;
+        this.bezierRight     = bezierRight;
+        this.bezierLeftTime  = bezierLeftTime;
         this.bezierRightTime = bezierRightTime;
     }
 
     public FiguraVec3 getTargetA(float delta) {
-        return targetA != null ? targetA.copy() : FiguraVec3.of(parseStringData(aCode[0], delta), parseStringData(aCode[1], delta), parseStringData(aCode[2], delta));
+        return targetA != null? targetA.copy() : FiguraVec3.of(parseStringData(codeA[0], delta, cacheA, 0), parseStringData(codeA[1], delta, cacheA, 1), parseStringData(codeA[2], delta, cacheA, 2));
     }
 
     public FiguraVec3 getTargetB(float delta) {
-        return targetB != null ? targetB.copy() : FiguraVec3.of(parseStringData(bCode[0], delta), parseStringData(bCode[1], delta), parseStringData(bCode[2], delta));
+        return targetB != null? targetB.copy() : FiguraVec3.of(parseStringData(codeB[0], delta, cacheB, 0), parseStringData(codeB[1], delta, cacheB, 1), parseStringData(codeB[2], delta, cacheB, 2));
     }
 
-    private float parseStringData(String data, float delta) {
+    private float parseStringData(String data, float delta, Object[] cache, int axis) {
         FiguraMod.pushProfiler(data);
+        if(cache[axis] instanceof Float f)
+            return FiguraMod.popReturnProfiler(f);
+        if(cache[axis] instanceof LuaValue f) try {
+            LuaValue result = owner.run(f, owner.animation, delta, animation).arg1();
+            if(result.isnumber())
+                return FiguraMod.popReturnProfiler(result.tofloat());
+            else
+                throw new LuaError("Failed to parse data from [" + this.chunkName + "], expected number, but got " + result + " (" + result.typename() + ")");
+        } catch(Exception e) {
+            if(owner.luaRuntime != null)
+                owner.luaRuntime.error(e);
+            return FiguraMod.popReturnProfiler(0f);
+        }
+        if(cache[axis] == this)
+            return FiguraMod.popReturnProfiler(0f);
         try {
-            return FiguraMod.popReturnProfiler(Float.parseFloat(data));
-        } catch (Exception ignored) {
-            if (data == null)
-                return FiguraMod.popReturnProfiler(0f);
-
+            Float v = data != null? Float.parseFloat(data) : 0f;
+            cache[axis] = v;
+            return FiguraMod.popReturnProfiler(v);
+        } catch(NumberFormatException ignored) {
+            LuaValue val = null;
             try {
-                LuaValue val = owner.loadScript(chunkName, "return " + data);
-                if (val == null)
+                val = owner.loadScript(chunkName, "return (" + data + ")");
+                if(val == null)
                     return FiguraMod.popReturnProfiler(0f);
-
-                Varargs args = owner.run(val, owner.animation, delta, animation);
-                if (args.isnumber(1))
-                    return FiguraMod.popReturnProfiler(args.tofloat(1));
-                else
-                    throw new Exception(); // dummy exception
-            } catch (Exception ignored2) {
+            } catch(LuaError e) {
                 try {
-                    LuaValue val = owner.loadScript(chunkName, data);
-                    if (val == null)
-                        return FiguraMod.popReturnProfiler(0f);
-
-                    Varargs args = owner.run(val, owner.animation, delta, animation);
-                    if (args.isnumber(1))
-                        return FiguraMod.popReturnProfiler(args.tofloat(1));
-                    else
-                        throw new LuaError("Failed to parse data from [" + this.chunkName + "], expected number, but got " + args.arg(1).typename());
-                } catch (Exception e) {
-                    if (owner.luaRuntime != null)
-                        owner.luaRuntime.error(e);
+                    val = owner.loadScript(chunkName, data);
+                } catch(LuaError e1) {
+                    if(owner.luaRuntime != null)
+                        owner.luaRuntime.error(e1);
                 }
             }
+            cache[axis] = (Object) val instanceof LuaValue f? f : this;
+            return parseStringData(data, delta, cache, axis);
         }
-
-        return FiguraMod.popReturnProfiler(0f);
     }
 
     public float getTime() {

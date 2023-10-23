@@ -478,9 +478,9 @@ public class EntityAPI<T extends Entity> {
         Avatar a = AvatarManager.getAvatar(entity);
         LuaTable table;
         if (a == null || a.luaRuntime == null) {
-            table = new ReadOnlyLuaTable(new LuaTable());
+            table = ReadOnlyLuaTable.EMPTY;
         } else {
-            table = new ReadOnlyLuaTable(a.luaRuntime.avatar_meta.storedStuff, a.luaRuntime.typeManager);
+            table = a.luaRuntime.getShared();
         }
         return key == null ? table : table.get(key);
     }

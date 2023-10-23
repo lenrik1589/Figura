@@ -65,21 +65,21 @@ public class AnimationPlayer {
                         if (anim.getOverrideRot())
                             part.animationOverride |= 1;
                         else if (!merge) {
-                            part.animationOverride = part.animationOverride & 6;
+                            part.animationOverride = part.animationOverride & ~1;
                         }
                     }
                     case POSITION -> {
                         if (anim.getOverridePos())
                             part.animationOverride |= 2;
                         else if (!merge) {
-                            part.animationOverride = part.animationOverride & 5;
+                            part.animationOverride = part.animationOverride & ~2;
                         }
                     }
                     case SCALE -> {
                         if (anim.getOverrideScale())
                             part.animationOverride |= 4;
                         else if (!merge) {
-                            part.animationOverride = part.animationOverride & 3;
+                            part.animationOverride = part.animationOverride & ~4;
                         }
                     }
                 }

@@ -472,9 +472,9 @@ public class WorldAPI {
         for (Avatar avatar : AvatarManager.getLoadedAvatars()) {
             LuaTable table;
             if (avatar.luaRuntime == null) {
-                table = new ReadOnlyLuaTable(new LuaTable());
+                table = ReadOnlyLuaTable.EMPTY;
             } else {
-                table = new ReadOnlyLuaTable(avatar.luaRuntime.avatar_meta.storedStuff, avatar.luaRuntime.typeManager);
+                table = avatar.luaRuntime.getShared();
             }
             varList.put(avatar.owner.toString(), table);
         }
