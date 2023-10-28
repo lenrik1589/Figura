@@ -64,7 +64,6 @@
     "render.MissingTextureAtlasSpriteAccessor",
     "render.ModelManagerAccessor",
     "render.PlayerModelMixin",
-    "render.SimpleTextureAccessor",
     "render.TextureAtlasAccessor",
     "render.TextureManagerAccessor",
 
