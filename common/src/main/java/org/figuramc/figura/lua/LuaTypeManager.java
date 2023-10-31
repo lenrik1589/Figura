@@ -274,7 +274,7 @@ public class LuaTypeManager {
                     case "[Lorg.luaj.vm2.LuaFunction;" -> args.checkfunction(argIndex);
                     case "[Lorg.luaj.vm2.LuaValue;" -> args.arg(argIndex);
                     case "[Ljava.lang.Object;" -> luaToJava(args.arg(argIndex));
-                    default -> args.checkuserdata(argIndex, argumentType);
+                    default -> args.checkuserdata(argIndex, argumentType.componentType());
                 };
             }
             return Arrays.copyOf(obj, obj.length, (Class<? extends Object[]>) argumentType);

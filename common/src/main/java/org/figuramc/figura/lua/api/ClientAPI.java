@@ -46,12 +46,12 @@ import java.util.function.Supplier;
 public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
+    private static final Minecraft minecraft = Minecraft.getInstance();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
     private static final HashMap<String, ModMetadataContainer> MOD_METADATA = new HashMap<>();
-    private static final boolean HAS_IRIS = isModLoaded("iris") || PlatformUtils.isModLoaded("oculus"); // separated to avoid indexing the list every frame
+    private static final boolean HAS_IRIS = isModLoaded("iris") || isModLoaded("oculus"); // separated to avoid indexing the list every frame
     private static final boolean HAS_QUILT = isModLoaded("quilt_loader"); //separated to avoid indexing the list every frame
-    public static final Supplier<Boolean> OPTIFINE_LOADED = Suppliers.memoize(() ->
-    {
+    public static final Supplier<Boolean> OPTIFINE_LOADED = Suppliers.memoize(() -> {
         try
         {
             Class.forName("net.optifine.Config");
@@ -229,6 +229,12 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_system_time")
     public static long getSystemTime() {
         return System.currentTimeMillis();
+    }
+    
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_game_time")
+    public static int getGameTime() {
+        return minecraft.gui.getGuiTicks();
     }
 
     @LuaWhitelist
@@ -497,10 +503,8 @@ public class ClientAPI {
 
         ServerData mServer = Minecraft.getInstance().getCurrentServer();
         if (mServer != null) {
-            if (mServer.name != null)
-                map.put("name", mServer.name);
-            if (mServer.ip != null)
-                map.put("ip", mServer.ip);
+            map.put("name", mServer.name);
+            map.put("ip", mServer.ip);
             if (mServer.motd != null)
                 map.put("motd", mServer.motd.getString());
         }

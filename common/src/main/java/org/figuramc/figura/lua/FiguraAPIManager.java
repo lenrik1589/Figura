@@ -124,6 +124,8 @@ public class FiguraAPIManager {
         add(AnimationAPI.class);
         add(Animation.class);
 
+        add(ChatMessage.class);
+        add(ChatMessage.Messages.class);
         add(HostAPI.class);
 
         add(RendererAPI.class);
@@ -138,24 +140,25 @@ public class FiguraAPIManager {
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
-        put("events", r -> r.events = new EventsAPI());
-        put("sounds", r -> new SoundAPI(r.owner));
+        put("events",        r -> r.events = new EventsAPI());
+        put("sounds",        r -> new SoundAPI(r.owner));
         put("vanilla_model", r -> r.vanilla_model = new VanillaModelAPI(r.owner));
-        put("keybinds", r -> r.keybinds = new KeybindAPI(r.owner));
-        put("host", r -> r.host = new HostAPI(r.owner));
-        put("nameplate", r -> r.nameplate = new NameplateAPI());
-        put("renderer", r -> r.renderer = new RendererAPI(r.owner));
-        put("action_wheel", r -> r.action_wheel = new ActionWheelAPI(r.owner));
-        put("animations", r -> new AnimationAPI(r.owner));
-        put("client", r -> ClientAPI.INSTANCE);
-        put("particles", r -> new ParticleAPI(r.owner));
-        put("avatar", r -> r.avatar_meta = new AvatarAPI(r.owner));
-        put("vectors", r -> VectorsAPI.INSTANCE);
-        put("matrices", r -> MatricesAPI.INSTANCE);
-        put("world", r -> WorldAPI.INSTANCE);
-        put("pings", r -> r.ping = new PingAPI(r.owner));
-        put("textures", r -> r.texture = new TextureAPI(r.owner));
-        put("config", r -> new ConfigAPI(r.owner));
+        put("keybinds",      r -> r.keybinds = new KeybindAPI(r.owner));
+        put("host",          r -> r.host = new HostAPI(r.owner));
+        put("nameplate",     r -> r.nameplate = new NameplateAPI());
+        put("renderer",      r -> r.renderer = new RendererAPI(r.owner));
+        put("action_wheel",  r -> r.action_wheel = new ActionWheelAPI(r.owner));
+        put("animations",    r -> new AnimationAPI(r.owner));
+        put("client",        r -> ClientAPI.INSTANCE);
+        put("particles",     r -> new ParticleAPI(r.owner));
+        put("avatar",        r -> r.avatar_meta = new AvatarAPI(r.owner));
+        put("vectors",       r -> VectorsAPI.INSTANCE);
+        put("matrices",      r -> MatricesAPI.INSTANCE);
+        put("world",         r -> WorldAPI.INSTANCE);
+        put("pings",         r -> r.ping = new PingAPI(r.owner));
+        put("textures",      r -> r.texture = new TextureAPI(r.owner));
+        put("config",        r -> new ConfigAPI(r.owner));
+        put("messages",      r -> new ChatMessage.Messages(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();

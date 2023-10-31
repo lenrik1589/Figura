@@ -1,6 +1,7 @@
 package org.figuramc.figura.lua.api;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
@@ -8,6 +9,8 @@ import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -15,6 +18,8 @@ import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -47,6 +52,7 @@ import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 
 import java.util.*;
 
@@ -306,9 +312,46 @@ public class HostAPI {
             value = "host.send_chat_command"
     )
     public HostAPI sendChatCommand(@LuaNotNil String command) {
-        if (!isHost() || !Configs.CHAT_MESSAGES.value) return this;
+        if (!isHost() || !Configs.CHAT_MESSAGES.value)
+            return this;
         ClientPacketListener connection = this.minecraft.getConnection();
         if (connection != null) connection.sendCommand(command.startsWith("/") ? command.substring(1) : command);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+        overloads = @LuaMethodOverload(
+            argumentTypes = Integer.class,
+            argumentNames = "lines"
+        ),
+        value = "host.scroll_chat"
+    )
+    public HostAPI scrollChat(int lines) {
+        if(isHost())
+            this.minecraft.gui.getChat().scrollChat(lines);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_chat_scroll")
+    public int getChatScroll() {
+        if(!isHost())
+            return 0;
+        return ((ChatComponentAccessor)this.minecraft.gui.getChat()).getScrollbarPos();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+        overloads = @LuaMethodOverload(
+            argumentTypes = int.class,
+            argumentNames = "lines"
+        ),
+        value = "host.set_chat_scroll"
+    )
+    public HostAPI setChatScroll(int lines) {
+        if(isHost())
+            this.minecraft.gui.getChat().scrollChat(lines - getChatScroll());
         return this;
     }
 
@@ -327,6 +370,56 @@ public class HostAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(value = "host.get_chat_history")
+    public List<String> getChatHistory() {
+        if (!isHost())
+            return List.of();
+        return this.minecraft.gui.getChat().getRecentChat();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+        value = "host.set_chat_history"
+    )
+    public HostAPI setChatHistory(String[] history) {
+        if (!isHost())
+            return this;
+        List<String> chat = this.minecraft.gui.getChat().getRecentChat();
+        chat.clear();
+        chat.addAll(Arrays.asList(history));
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+        overloads = {
+            @LuaMethodOverload(
+                argumentTypes = ChatMessage.class,
+                argumentNames = "message"
+            ),
+            @LuaMethodOverload(
+                argumentTypes = {ChatMessage.class, Integer.class},
+                argumentNames = {"message", "index"}
+            )
+        },
+        value = "host.append_chat_message"
+    )
+    public HostAPI appendChatMessage(ChatMessage message, Integer index) {
+        if (!isHost())
+            return this;
+
+        index = index == null? 0: index - 1;
+        List<GuiMessage> messages = ((ChatComponentAccessor) this.minecraft.gui.getChat()).getAllMessages();
+        if (index < 0 || index >= messages.size())
+            return this;
+
+        messages.add(index, message.message());
+
+        this.minecraft.gui.getChat().rescaleChat();
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = Integer.class,
@@ -334,7 +427,7 @@ public class HostAPI {
             ),
             value = "host.get_chat_message"
     )
-    public Map<String, Object> getChatMessage(int index) {
+    public ChatMessage getChatMessage(int index) {
         if (!isHost())
             return null;
 
@@ -344,14 +437,7 @@ public class HostAPI {
             return null;
 
         GuiMessage message = messages.get(index);
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("addedTime", message.addedTime());
-        map.put("message", message.content().getString());
-        map.put("json", message.content());
-        map.put("backgroundColor", ((GuiMessageAccessor) (Object) message).figura$getColor());
-
-        return map;
+        return new ChatMessage(owner, message);
     }
 
     @LuaWhitelist
@@ -362,33 +448,122 @@ public class HostAPI {
                             argumentNames = "index"
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {Integer.class, String.class},
-                            argumentNames = {"index", "newMessage"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Integer.class, String.class, FiguraVec3.class},
-                            argumentNames = {"index", "newMessage", "backgroundColor"}
+                            argumentTypes = {Integer.class, ChatMessage.class},
+                            argumentNames = {"index", "message"}
                     )
             },
-            value = "host.set_chat_message")
-    public HostAPI setChatMessage(int index, String newMessage, FiguraVec3 backgroundColor) {
-        if (!isHost()) return this;
+            value = "host.set_chat_message"
+    )
+    public HostAPI setChatMessage(int index, ChatMessage message) {
+        if (!isHost())
+            return this;
 
         index--;
         List<GuiMessage> messages = ((ChatComponentAccessor) this.minecraft.gui.getChat()).getAllMessages();
         if (index < 0 || index >= messages.size())
             return this;
 
-        if (newMessage == null)
+        if (message == null)
             messages.remove(index);
-        else {
-            GuiMessage old = messages.get(index);
-            GuiMessage neww = new GuiMessage(this.minecraft.gui.getGuiTicks(), TextUtils.tryParseJson(newMessage), null, GuiMessageTag.chatModified(old.content().getString()));
-            messages.set(index, neww);
-            ((GuiMessageAccessor) (Object) neww).figura$setColor(backgroundColor != null ? ColorUtils.rgbToInt(backgroundColor) : ((GuiMessageAccessor) (Object) old).figura$getColor());
-        }
+        else
+            messages.set(index, ("null".equals(message.getTagJson())? message.withTagText(GuiMessageTag.chatModified(messages.get(index).content().getString()).text()) : message).message());
 
         this.minecraft.gui.getChat().rescaleChat();
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(value = "host.get_chat_messages")
+    public List<ChatMessage> getChatMessages() {
+        if (!isHost())
+            return null;
+
+        List<GuiMessage> messages = ((ChatComponentAccessor)this.minecraft.gui.getChat()).getAllMessages();
+        List<ChatMessage> convert = new ArrayList<>();
+        for (GuiMessage message : Lists.reverse(messages))
+            convert.add(new ChatMessage(owner, message));
+
+        return convert;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+        overloads = {
+            @LuaMethodOverload,
+            @LuaMethodOverload(
+                argumentTypes = LuaTable.class,
+                argumentNames = "messages"
+            ),
+            @LuaMethodOverload(
+                argumentTypes = {LuaTable.class, Boolean.class},
+                argumentNames = {"messages", "trim"}
+            ),
+            @LuaMethodOverload(
+                argumentTypes = {LuaTable.class, Boolean.class, Boolean.class},
+                argumentNames = {"messages", "trim", "rerun"}
+            )
+        },
+        value = "host.set_chat_messages"
+    )
+    public HostAPI setChatMessages(ChatMessage[] messages, Boolean trim, boolean rerun) {
+        if (!isHost() || !Configs.CHAT_MESSAGES.value)
+            return this;
+
+        ChatComponent    chat = this.minecraft.gui.getChat();
+        List<GuiMessage> full = ((ChatComponentAccessor) chat).getAllMessages();
+        full.clear();
+        if(rerun)
+            FiguraMod.LOGGER.info("replacing all messages and rerunning events!");
+        for (ChatMessage message : Lists.reverse(Arrays.asList(messages))) {
+            if (rerun) {
+                ((ChatComponentAccessor) chat).invokeLogChatMessage(message.message().content(), message.message().tag());
+                String                json = message.getContentJson();
+                Pair<String, Integer> res  = owner.chatReceivedMessageEvent(message.getContentText(), json);
+                if (res != null) {
+                    String newMessage = res.getFirst();
+                    if (newMessage == null)
+                        continue;
+                    if (!json.equals(newMessage)) {
+                        TextUtils.allowScriptEvents = true;
+                        message = message.withContent(newMessage);
+                        TextUtils.allowScriptEvents = false;
+                    }
+                    Integer color = res.getSecond();
+                    message.setBackgroundColor(color == null? 0 : color);
+                }
+            }
+            full.add(message.message());
+        }
+
+        List<GuiMessage.Line> cut = ((ChatComponentAccessor) chat).getTrimmedMessages();
+        cut.clear();
+        int i = Mth.floor((double)chat.getWidth() / chat.getScale());
+        for (GuiMessage message : Lists.reverse(full)) {
+            List<FormattedCharSequence> list = ComponentRenderUtils.wrapComponents(
+                message.content(),
+                message.tag() != null && message.tag().icon() != null? i - message.tag().icon().width - 6 : i,
+                this.minecraft.font
+            );
+
+            for(int k = 0; k < list.size(); ++k) {
+                FormattedCharSequence formattedCharSequence = list.get(k);
+
+                boolean bl2 = k == list.size() - 1;
+                GuiMessage.Line line = new GuiMessage.Line(message.addedTime(), formattedCharSequence, message.tag(), bl2);
+                ((GuiMessageAccessor)(Object)line).figura$setColor(((GuiMessageAccessor)(Object)message).figura$getColor());
+                cut.add(0, line);
+            }
+        }
+
+        if (trim != Boolean.FALSE) {
+            int max = trim == null? 100 : 10000;
+            while(cut.size() > max)
+                cut.remove(cut.size() - 1);
+
+            while(full.size() > max)
+                full.remove(full.size() - 1);
+        }
+
         return this;
     }
 

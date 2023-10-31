@@ -202,6 +202,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private void updateMotdWidget() {
         int panels = getPanels();
 
+        panels = Math.max((width - Math.min(width - panels * 2 - 16, height - 96)) / 2 - 8, panels);
+
         int infoBottom = infoWidget.getY() + infoWidget.getHeight();
 
         int width = panels - 8;
@@ -210,20 +212,19 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int y = infoBottom + 8;
 
         infoWidget.tick();
+        Component motd = NetworkStuff.motd;
+        if (motd == null) {
+            if (!FiguraMod.debugModeEnabled())
+                motd = Component.empty();
+            else
+                motd = DEBUG_MOTD_FALLBACK;
+        }
         if (motdWidget == null) {
-            Component motd = NetworkStuff.motd == null ? DEBUG_MOTD_FALLBACK : NetworkStuff.motd;
-            if (!FiguraMod.debugModeEnabled() && motd == DEBUG_MOTD_FALLBACK) {
-                return;
-            }
             motdWidget = addRenderableWidget(new BackendMotdWidget(x, y, width, height, motd, font));
         }  else {
             motdWidget.setPosition(x, y);
             motdWidget.setWidth(width);
             motdWidget.setHeight(height);
-            Component motd = NetworkStuff.motd == null ? DEBUG_MOTD_FALLBACK : NetworkStuff.motd;
-            if (!FiguraMod.debugModeEnabled() && motd == DEBUG_MOTD_FALLBACK) {
-                return;
-            }
             motdWidget.setMessage(motd);
         }
 
